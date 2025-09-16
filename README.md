@@ -6,7 +6,7 @@ This project is a serverless application that provides an API to analyze legal d
 
 The application follows a simple, event-driven serverless architecture:
 
-1.  A client sends a `POST` request with a JSON payload containing a `pdf_url` and the `case_id` to the API endpoint `/extract` (current version only runs locally, missing fix for the deployed version).
+1.  A client sends a `POST` request with a JSON payload containing a `pdf_url` and the `case_id` to the API endpoint `/extract`.
 2.  API Gateway triggers an **AWS Lambda** function.
 3.  The Lambda function:
     a. Downloads the PDF file from the provided URL.
@@ -21,7 +21,7 @@ The application follows a simple, event-driven serverless architecture:
     │ POST /extract
     ▼
 ┌──────────────────┐
-│ Amazon API Gateway │
+│ API Gateway      │
 └──────────────────┘
     │
     │ Triggers
@@ -38,7 +38,15 @@ The application follows a simple, event-driven serverless architecture:
 └──────────────────┘
 ```
 
-Note: At current version the api can be run using the uvicorn package for fastapi.
+### Project struture
+
+The project is strutured using the ports/adapters pattern, where we have the follwing layers:
+- `domain`: Contains the core business logic and entities. This layer is independent of external frameworks or databases.
+- `application`: Orchestrates the domain objects to perform specific tasks. It defines interfaces for interacting with external services (ports).
+- `infrastructure`: Implements the interfaces defined in the application layer (adapters). This layer deals with external concerns like databases, APIs, and frameworks.
+
+For example the storage layer could be changed in the implementation part to use a DynamoDB database instead of a MongoDB database, by adding to the infrastruture/adapters an implementation for the DynomoDB storage interface.
+
 
 ## Prerequisites
 
@@ -70,7 +78,7 @@ Before begin, ensure the following installed and configured:
 
 4.  **Configure Environment Variables for Local Testing**
 
-    Create a file named `.env.json` in the project root. This file will provide environment variables for local testing. An example of the variables is provided in `.env.example`
+    Create a file named `.env` in the project root. This file will provide environment variables for local testing. An example of the variables is provided in `.env.example`
 
     ```
     GEMINI_API_KEY="api-key"
@@ -90,13 +98,7 @@ Before begin, ensure the following installed and configured:
     docker compose up -d
     ```
 
-2.  **Build the Application**
-    The `--use-container` flag builds the function inside a Docker container that mimics the Lambda environment.
-    ```bash
-    sam build --use-container
-    ```
-
-3.  **Run the API Locally**
+2.  **Run the API Locally**
     Running the following command at the root of the project starts the api server and hot-reloads on code changes.
     ```bash
     python -m src.main
@@ -106,7 +108,7 @@ Before begin, ensure the following installed and configured:
 ![swagger docs](docs/image-1.png)
 
 
-4.  **Invoke the Function Locally**
+3.  **Invoke the Function Locally**
     Send a request to the local endpoint using `curl` or an API client like Postman.
     ```bash
     curl -X POST http://127.0.0.1:8000/extract \
@@ -131,142 +133,7 @@ Example response:
       "event_page_init": 2,
       "event_page_end": 2
     },
-    {
-      "event_id": 1,
-      "event_name": "Declaração de Alteração de Endereço do Fundo",
-      "event_description": "O FUNDO DE INVESTIMENTO EM DIREITOS CREDITORIOS NAO PADRONIZADOS NPL II declara alteração de sua sede social, com eficácia a partir desta data, sendo assinada digitalmente por seus representantes.",
-      "event_date": "2023-07-03",
-      "event_page_init": 111,
-      "event_page_end": 113
-    },
-    {
-      "event_id": 2,
-      "event_name": "Substabelecimento de Poderes (Réu - Recovery do Brasil)",
-      "event_description": "Substabelecimento de poderes de RECOVERY DO BRASIL CONSULTORIA S.A. para vários advogados, incluindo SUELLEN NOGUEIRA VENTURA e outros.",
-      "event_date": "2024-05-20",
-      "event_page_init": 122,
-      "event_page_end": 125
-    },
-    {
-      "event_id": 3,
-      "event_name": "Descoberta de Negativação Indevida",
-      "event_description": "O Requerente foi surpreendido com a negativa de empréstimo e posterior descoberta de uma negativação indevida junto ao SPC.",
-      "event_date": "2024-09-01",
-      "event_page_init": 2,
-      "event_page_end": 2
-    },
-    {
-      "event_id": 4,
-      "event_name": "Assinatura da Procuração do Autor",
-      "event_description": "JOSÉ RIBAMAR ALVES FILHO outorga procuração 'ad judicia et extra' à advogada Tânia Cristina Xisto Timoteo.",
-      "event_date": "2024-09-16",
-      "event_page_init": 16,
-      "event_page_end": 16
-    },
-    {
-      "event_id": 5,
-      "event_name": "Assinatura da Declaração de Hipossuficiência",
-      "event_description": "JOSÉ RIBAMAR ALVES FILHO declara não possuir condições de arcar com as custas do processo sem prejuízo do seu sustento.",
-      "event_date": "2024-09-16",
-      "event_page_init": 17,
-      "event_page_end": 17
-    },
-    {
-      "event_id": 6,
-      "event_name": "Emissão do Relatório de Crédito (Crednet Light)",
-      "event_description": "Consulta do CPF do Autor que resultou na emissão do relatório de crédito Crednet Light, evidenciando as negativações, incluindo a dívida contestada.",
-      "event_date": "2024-10-03",
-      "event_page_init": 14,
-      "event_page_end": 15
-    },
-    {
-      "event_id": 7,
-      "event_name": "Ajuizamento da Ação",
-      "event_description": "JOSÉ RIBAMAR ALVES FILHO propõe AÇÃO DECLARATÓRIA DE INEXISTÊNCIA DE DÉBITOS C/C INDENIZAÇÃO POR DANOS MORAIS e pedido de tutela de urgência.",
-      "event_date": "2024-10-22",
-      "event_page_init": 1,
-      "event_page_end": 13
-    },
-    {
-      "event_id": 8,
-      "event_name": "Registro de Ação no Sistema Judiciário",
-      "event_description": "O sistema judiciário certifica a entrada da ação e que não há processos repetidos relacionados ao processo 0809090-86.2024.8.12.0021.",
-      "event_date": "2024-10-22",
-      "event_page_init": 30,
-      "event_page_end": 30
-    },
-    {
-      "event_id": 9,
-      "event_name": "Retificação de Nome no Cadastro do Processo",
-      "event_description": "O nome do Autor foi retificado no cadastro do processo de 'Jose Ribamar Alves Filho' para 'José Ribamar Alves Filho'.",
-      "event_date": "2024-10-23",
-      "event_page_init": 31,
-      "event_page_end": 31
-    },
-    {
-      "event_id": 10,
-      "event_name": "Decisão Interlocutória (Deferimento de Tutela de Urgência e Justiça Gratuita)",
-      "event_description": "A Juíza defere o pedido de tutela provisória de urgência para suspender o nome da autora do SERASA/SCPC pela dívida representada nesses autos e concede o benefício da justiça gratuita.",
-      "event_date": "2024-10-23",
-      "event_page_init": 32,
-      "event_page_end": 34
-    },
-    {
-      "event_id": 11,
-      "event_name": "Remessa de Relação para Publicação",
-      "event_description": "Certidão atesta que o ato de deferimento da tutela de urgência e justiça gratuita foi encaminhado para publicação.",
-      "event_date": "2024-11-14",
-      "event_page_init": 35,
-      "event_page_end": 35
-    },
-    {
-      "event_id": 12,
-      "event_name": "Publicação da Decisão Interlocutória",
-      "event_description": "O ato de deferimento da tutela de urgência e justiça gratuita foi publicado no Diário da Justiça nº 5529.",
-      "event_date": "2024-11-19",
-      "event_page_init": 36,
-      "event_page_end": 36
-    },
-    {
-      "event_id": 13,
-      "event_name": "Designação de Audiência de Conciliação",
-      "event_description": "Designada Sessão de Conciliação para 2025-03-24 às 14:20h, na Sala CEJUSC. Informações para audiência virtual também são fornecidas.",
-      "event_date": "2024-11-27",
-      "event_page_init": 37,
-      "event_page_end": 39
-    },
-    {
-      "event_id": 14,
-      "event_name": "Emissão de Carta de Citação e Intimação",
-      "event_description": "Carta de citação e intimação emitida para o Réu comparecer à audiência de conciliação em 2025-03-24.",
-      "event_date": "2025-01-07",
-      "event_page_init": 131,
-      "event_page_end": 131
-    },
-    {
-      "event_id": 15,
-      "event_name": "Tentativa de Citação do Réu",
-      "event_description": "Tentativa de entrega da carta de citação ao Réu em 2025-01-17, com a observação 'Ausente'.",
-      "event_date": "2025-01-17",
-      "event_page_init": 132,
-      "event_page_end": 132
-    },
-    {
-      "event_id": 16,
-      "event_name": "Juntada de Carta de Preposição e Substabelecimento do Réu",
-      "event_description": "O Fundo de Investimento Em Direitos Creditórios Não Padronizados NPL II protocola carta de preposição e substabelecimento de advogados, nomeando Daniel Nogueira de Carvalho e Nadir Alcides Oliveira Júnior como seus representantes para a audiência de conciliação.",
-      "event_date": "2025-03-21",
-      "event_page_init": 133,
-      "event_page_end": 138
-    },
-    {
-      "event_id": 17,
-      "event_name": "Audiência de Conciliação",
-      "event_description": "Realizada audiência de conciliação com a presença de representantes de ambas as partes (Autor representado pela advogada e Réu pelo preposto e advogado), mas sem acordo. O Réu foi notificado para apresentar contestação em 15 dias.",
-      "event_date": "2025-03-24",
-      "event_page_init": 139,
-      "event_page_end": 140
-    }
+    ...
   ],
   "evidence": [
     {
@@ -276,118 +143,7 @@ Example response:
       "evidence_page_init": 14,
       "evidence_page_end": 15
     },
-    {
-      "evidence_id": 1,
-      "evidence_name": "Procuração \"Ad Judicia et Extra\" (Autor)",
-      "evidence_flaw": "Sem inconsistências",
-      "evidence_page_init": 16,
-      "evidence_page_end": 16
-    },
-    {
-      "evidence_id": 2,
-      "evidence_name": "Declaração de Hipossuficiência (Autor)",
-      "evidence_flaw": "Sem inconsistências",
-      "evidence_page_init": 17,
-      "evidence_page_end": 17
-    },
-    {
-      "evidence_id": 3,
-      "evidence_name": "Documento de Identidade (RG) do Autor",
-      "evidence_flaw": "Sem inconsistências",
-      "evidence_page_init": 19,
-      "evidence_page_end": 20
-    },
-    {
-      "evidence_id": 4,
-      "evidence_name": "Fatura Neoenergia",
-      "evidence_flaw": "Sem inconsistências",
-      "evidence_page_init": 21,
-      "evidence_page_end": 21
-    },
-    {
-      "evidence_id": 5,
-      "evidence_name": "Carteira de Trabalho Digital do Autor",
-      "evidence_flaw": "Sem inconsistências",
-      "evidence_page_init": 22,
-      "evidence_page_end": 22
-    },
-    {
-      "evidence_id": 6,
-      "evidence_name": "Comprovante de Situação Cadastral no CPF do Autor",
-      "evidence_flaw": "Sem inconsistências",
-      "evidence_page_init": 23,
-      "evidence_page_end": 24
-    },
-    {
-      "evidence_id": 7,
-      "evidence_name": "Consulta Restituição IRPF do Autor",
-      "evidence_flaw": "\"Não há informação para o exercício informado\", o que corrobora a alegação de baixa renda/inexistência de restituição.",
-      "evidence_page_init": 25,
-      "evidence_page_end": 26
-    },
-    {
-      "evidence_id": 8,
-      "evidence_name": "Declaração do Imposto sobre a Renda Retido na Fonte - Dirf",
-      "evidence_flaw": "\"Não Consta Entrega de Declarações\", o que corrobora a alegação de baixa renda/nenhuma retenção de imposto na fonte.",
-      "evidence_page_init": 27,
-      "evidence_page_end": 27
-    },
-    {
-      "evidence_id": 9,
-      "evidence_name": "Certidão Negativa de Débitos Trabalhistas do Autor",
-      "evidence_flaw": "Sem inconsistências",
-      "evidence_page_init": 28,
-      "evidence_page_end": 28
-    },
-    {
-      "evidence_id": 10,
-      "evidence_name": "Certidão Negativa de Débitos Relativos aos Tributos Federais e à Dívida Ativa da União do Autor",
-      "evidence_flaw": "Sem inconsistências",
-      "evidence_page_init": 29,
-      "evidence_page_end": 29
-    },
-    {
-      "evidence_id": 11,
-      "evidence_name": "Regulamento do FUNDO DE INVESTIMENTO EM DIREITOS CREDITORIOS NAO PADRONIZADOS NPL II e Anexos",
-      "evidence_flaw": "Sem inconsistências",
-      "evidence_page_init": 41,
-      "evidence_page_end": 110
-    },
-    {
-      "evidence_id": 12,
-      "evidence_name": "Declaração de Alteração de Endereço do FUNDO DE INVESTIMENTO EM DIREITOS CREDITORIOS NAO PADRONIZADOS NPL II",
-      "evidence_flaw": "Sem inconsistências",
-      "evidence_page_init": 111,
-      "evidence_page_end": 113
-    },
-    {
-      "evidence_id": 13,
-      "evidence_name": "Procuração com Revogação (Réu)",
-      "evidence_flaw": "Sem inconsistências",
-      "evidence_page_init": 114,
-      "evidence_page_end": 120
-    },
-    {
-      "evidence_id": 14,
-      "evidence_name": "Substabelecimento de Poderes (Réu - Recovery do Brasil)",
-      "evidence_flaw": "Sem inconsistências",
-      "evidence_page_init": 122,
-      "evidence_page_end": 125
-    },
-    {
-      "evidence_id": 15,
-      "evidence_name": "Carta de Preposição (Réu)",
-      "evidence_flaw": "Sem inconsistências",
-      "evidence_page_init": 133,
-      "evidence_page_end": 134
-    },
-    {
-      "evidence_id": 16,
-      "evidence_name": "Substabelecimento de Poderes (Réu - Nadir Alcides Oliveira Júnior)",
-      "evidence_flaw": "Sem inconsistências",
-      "evidence_page_init": 135,
-      "evidence_page_end": 138
-    }
+   ...
   ],
   "persisted_at": "2025-09-16T18:57:47.718540Z"
 }
@@ -397,13 +153,19 @@ Example response:
 Using MongoCompass for instance we can validate the persistence of the extracted data:
 ![mongo-compass data storage](docs/image-3.png)
 
-## Deployment to AWS
+## Deployment to AWS Localstack
 
-1.  **Guided Deployment**
+1.  **Build the Application**
+    The `--use-container` flag builds the function inside a Docker container that mimics the Lambda environment.
+    ```bash
+    samlocal build --use-container
+    ```
+
+2.  **Guided Deployment**
     The first deploy, can use the `--guided` flag. SAM will prompt for deployment parameters.
 
     ```bash
-    sam deploy --guided
+    samlocal deploy --guided
     ```
 
     It will ask for:
@@ -416,23 +178,48 @@ Using MongoCompass for instance we can validate the persistence of the extracted
 
     SAM will save the choices in `samconfig.toml` for future deployments.
 
-2.  **Subsequent Deployments**
-    After the first deployment, we can simply run:
-    ```bash
-    sam deploy
-    ```
+3. **Start the Service**
+
+  To invoke the lambda we can start the local enviroment by running:
+  ```bash
+  sam local start-api
+  ```
+
+  It will run the docker image of the app and provide a url for local testing like in the following logs:
+  ```
+  Mounting ProcessDataExtractionFunction at http://127.0.0.1:3000/extract [POST]
+  You can now browse to the above endpoints to invoke your functions. You do not need to restart/reload SAM CLI while      
+  working on your functions, changes will be reflected instantly/automatically. If you used sam build before running local 
+  commands, you will need to re-run sam build for the changes to be picked up. You only need to restart SAM CLI if you     
+  update your AWS SAM template
+  2025-09-16 21:36:45 WARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.
+  * Running on http://127.0.0.1:3000
+  2025-09-16 21:36:45 Press CTRL+C to quit
+  ```
+
+  Then we can call the service by running a curl command like this:
+  ```bash
+   curl -X POST \
+  'http://127.0.0.1:3000/extract' \     
+  -H 'accept: application/json' \       
+  -H 'Content-Type: application/json' \ 
+  -d '{
+  "pdf_url": "https://process-file-challenge.s3.us-east-1.amazonaws.com/0809090-86.2024.8.12.0021.pdf",
+  "case_id": "0809090-86.2024.8.12.0021"
+  }'
+  ```
 
 ## Cleanup
 
 To delete the deployed application and all associated AWS resources, run:
 ```bash
-sam delete
+samlocal delete
 ```
 
 ## Future works
 
 - Implement unit and integration tests
-- Fix configuration for lambda deployment
+- Fix and improve configuration for lambda deployment (eg. use environment variables in localstack, create deployment scripts)
 - Add more validations for data input and response from gemini
 - Test best model for file analysis
 - Explorre the possibility of getting metrics and XAI features from the model output to evaluate possible alucinations or inacurate data output
@@ -440,7 +227,7 @@ sam delete
 
 ## Issues
 
-- Currently it returns the following error while deploying locally using the `samlocal deploy --guided` command:
+- During the trials the following error was occuring while deploying locally using the `samlocal deploy --guided` command:
 
 ![error log](docs/image.png)
 

@@ -27,9 +27,10 @@ Resources:
   ProcessDataExtractionFunction:
     Type: AWS::Serverless::Function
     Properties:
-      CodeUri: src/
-      Handler: main.handler
+      CodeUri: ./
+      Handler: src.main.handler
       Runtime: python3.12
+      PackageType: Zip
       Architectures:
         - x86_64
       Events:
@@ -43,6 +44,8 @@ Resources:
           GEMINI_API_KEY: !Ref GeminiApiKey
           MONGODB_URI: !Ref MongoDbUri
           MONGODB_DB_NAME: !Ref MongoDbName
+
+
 Outputs:
   ApiUrl:
     Description: API Gateway endpoint URL for Prod stage for Process Data Extraction
