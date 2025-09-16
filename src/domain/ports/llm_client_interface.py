@@ -3,7 +3,7 @@ from abc import ABC, abstractmethod
 
 class ILlmClient(ABC):
     @abstractmethod
-    def extract_data_from_pdf(self, pdf_binary: str) -> dict:
+    def extract_data_from_pdf(self, file_path: str) -> dict:
         """
         Extracts structured data from a PDF file binary.
         
