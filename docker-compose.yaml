@@ -1,0 +1,28 @@
+services:
+  localstack:
+    image: localstack/localstack:latest
+    ports:
+      - "4566:4566"
+      - "4510-4559:4510-4559"
+    environment:
+      - SERVICES=lambda,dynamodb,s3,cloudformation, iam, sqs
+      - DEFAULT_REGION=us-east-1
+      - AWS_ACCESS_KEY_ID=test
+      - AWS_SECRET_ACCESS_KEY=test
+      - LAMBDA_EXECUTOR=local
+      - LAMBDA_REMOTE_DOCKER=false
+      - DEBUG=1
+    volumes:
+      - "./localstack:/docker-entrypoint-initaws.d"
+  
+  mongo:
+    image: mongo:latest
+    container_name: mongodb
+    ports:
+      - "27017:27017"
+    volumes:
+      - "mongo-data:/data/db"
+
+
+volumes:
+  mongo-data: {}

@@ -1,0 +1,11 @@
+version = 0.1
+
+[default.deploy.parameters]
+stack_name = "process-data-extract"
+resolve_s3 = true
+s3_prefix = "process-data-extract"
+region = "us-east-1"
+confirm_changeset = true
+capabilities = "CAPABILITY_IAM"
+image_repositories = []
+parameter_overrides = "MongoDbUri=\"mongodb://localhost:27017\" MongoDbName=\"process_data_db\""

@@ -1,0 +1,50 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: |
+  Hello World AWS Lambda and Amazon API Gateway REST API
+  Sample AWS SAM template to create a simple Lambda function connected to a REST API.
+
+
+Parameters:
+  GeminiApiKey:
+    Type: String
+    Description: "API Key for Google Gemini"
+    NoEcho: true
+  MongoDbUri:
+    Type: String
+    Description: "MongoDB connection URI for the deployed environment"
+  MongoDbName:
+    Type: String
+    Description: "MongoDB database name"
+    Default: "process_data_db"
+
+Globals:
+  Function:
+    Timeout: 60
+
+
+Resources:
+  ProcessDataExtractionFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: src/
+      Handler: main.handler
+      Runtime: python3.12
+      Architectures:
+        - x86_64
+      Events:
+        ProcessDataExtraction:
+          Type: Api
+          Properties:
+            Path: /extract
+            Method: post
+      Environment:
+        Variables:
+          GEMINI_API_KEY: !Ref GeminiApiKey
+          MONGODB_URI: !Ref MongoDbUri
+          MONGODB_DB_NAME: !Ref MongoDbName
+Outputs:
+  ApiUrl:
+    Description: API Gateway endpoint URL for Prod stage for Process Data Extraction
+      function
+    Value: !Sub https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/extract/

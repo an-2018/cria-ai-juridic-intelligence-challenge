@@ -1,0 +1,34 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python/
+env/ # For virtualenv
+venv/ # For venv
+lib/
+include/
+bin/
+share/
+
+# AWS SAM
+.aws-sam/
+
+# IDE-specific files
+.vscode/
+.idea/
+
+# OS-specific files
+.DS_Store
+Thumbs.db
+
+# Logs and databases
+*.log
+*.sqlite
+*.db
+
+# dotenv files
+.env
+
+venv/*
+doc-helpers.md
