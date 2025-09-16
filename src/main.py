@@ -1,5 +1,8 @@
+import sys
 from fastapi import FastAPI
+from logging.config import dictConfig
 from src.routes.process__data_routes import router as process_data_router
+import src.infrastruture.configs.log_config  # logging configuratio
 # from mangum import Mangum # aws lambda
 
 app = FastAPI(title="Cria AI Juridic Intelligence Challenge", version="1.0.0")
@@ -10,4 +13,4 @@ app.include_router(process_data_router)
 
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run("main:app", host="0.0.0.0", port=8000, reload=True)
+    uvicorn.run("src.main:app", host="0.0.0.0", port=8000, reload=True,  reload_dirs=["src"])
