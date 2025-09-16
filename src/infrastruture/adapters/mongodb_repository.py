@@ -5,6 +5,7 @@ from src.domain.ports.storage_repository_interface import IStorageRepository
 
 
 class MongoDBRepository(IStorageRepository):
+    """Implementation of the storage repository using MongoDB"""
     def __init__(self):
         self.logger = logging.getLogger(__name__)
         try:

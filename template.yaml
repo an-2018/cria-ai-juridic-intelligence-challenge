@@ -5,22 +5,15 @@ Description: |
   Sample AWS SAM template to create a simple Lambda function connected to a REST API.
 
 
-Parameters:
-  GeminiApiKey:
-    Type: String
-    Description: "API Key for Google Gemini"
-    NoEcho: true
-  MongoDbUri:
-    Type: String
-    Description: "MongoDB connection URI for the deployed environment"
-  MongoDbName:
-    Type: String
-    Description: "MongoDB database name"
-    Default: "process_data_db"
+# Parameters:
+#   GeminiApiKey:
+#     Type: String
+#     Description: "API Key for Google Gemini"
+#     NoEcho: true
 
 Globals:
   Function:
-    Timeout: 60
+    Timeout: 300
 
 
 Resources:
@@ -41,9 +34,9 @@ Resources:
             Method: post
       Environment:
         Variables:
-          GEMINI_API_KEY: !Ref GeminiApiKey
-          MONGODB_URI: !Ref MongoDbUri
-          MONGODB_DB_NAME: !Ref MongoDbName
+          GEMINI_API_KEY: api-key #TODO: use env variables
+          MONGODB_URI: mongodb://host.docker.internal:27017 #TODO: use env variables
+          MONGODB_DB_NAME: legal_cases_db
 
 
 Outputs:

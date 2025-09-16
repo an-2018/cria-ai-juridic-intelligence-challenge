@@ -161,6 +161,12 @@ Using MongoCompass for instance we can validate the persistence of the extracted
     samlocal build --use-container
     ```
 
+    To improve build times we can use cache ater the first build:
+    
+    ```bash
+    samlocal build --use-container --cached
+    ```
+
 2.  **Guided Deployment**
     The first deploy, can use the `--guided` flag. SAM will prompt for deployment parameters.
 
@@ -199,15 +205,16 @@ Using MongoCompass for instance we can validate the persistence of the extracted
 
   Then we can call the service by running a curl command like this:
   ```bash
-   curl -X POST \
-  'http://127.0.0.1:3000/extract' \     
-  -H 'accept: application/json' \       
-  -H 'Content-Type: application/json' \ 
-  -d '{
-  "pdf_url": "https://process-file-challenge.s3.us-east-1.amazonaws.com/0809090-86.2024.8.12.0021.pdf",
-  "case_id": "0809090-86.2024.8.12.0021"
-  }'
+curl -X POST \
+  'http://127.0.0.1:3000/extract' \
+  -H 'accept: application/json' \
+  -H 'Content-Type: application/json' \
+  -d '{"pdf_url":"https://process-file-challenge.s3.us-east-1.amazonaws.com/0809090-86.2024.8.12.0021.pdf","case_id":"0809090-86.2024.8.12.0021"}'
   ```
+
+  Following we have a local test of the api using `sam local start-api` command:
+
+  ![logs local test](docs/image-local-test.png)
 
 ## Cleanup
 
@@ -220,6 +227,7 @@ samlocal delete
 
 - Implement unit and integration tests
 - Fix and improve configuration for lambda deployment (eg. use environment variables in localstack, create deployment scripts)
+- Optimise build process (eg. use cache, sam configurations with env variables)
 - Add more validations for data input and response from gemini
 - Test best model for file analysis
 - Explorre the possibility of getting metrics and XAI features from the model output to evaluate possible alucinations or inacurate data output
