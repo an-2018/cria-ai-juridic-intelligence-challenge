@@ -3,11 +3,13 @@ from datetime import datetime, timezone
 from src.application.dtos.input.process_data_input_dto import ProcessDataInputDTO
 from src.application.dtos.output.process_data_output_dto import ProcessDataOutputDTO
 from src.application.services.process_data_service import ProcessDataService
+from src.infrastruture.adapters.mongodb_repository import MongoDBRepository
 
 class ProcessDataUseCase:
     def __init__(self):
         self.logger = logging.getLogger(__name__)
         self.process_data_service = ProcessDataService()
+        self.storage_repository = MongoDBRepository()
 
     def execute(self, input_dto: ProcessDataInputDTO) -> ProcessDataOutputDTO:
         self.logger.info(f"Executing ProcessDataUseCase with input: {input_dto}")
@@ -25,6 +27,11 @@ class ProcessDataUseCase:
             })
         
         # persist extracted data in database
-        
+        self.storage_repository.save(
+            case_id=output_dto.case_id, 
+            data=output_dto.model_dump(
+                mode='json'
+            ))
+
         # return ProcessDataOutputDTO
         return output_dto

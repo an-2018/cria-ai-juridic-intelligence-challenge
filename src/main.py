@@ -15,6 +15,5 @@ if __name__ == "__main__":
     import uvicorn
     print("--- App Settings ---")
     print(f"GEMINI_API_KEY loaded: {bool(settings.GEMINI_API_KEY)}")
-    print(f"DYNAMODB_TABLE_NAME: {settings.DYNAMODB_TABLE_NAME}")
     print("--------------------")
     uvicorn.run("src.main:app", host="0.0.0.0", port=8000, reload=True,  reload_dirs=["src"])

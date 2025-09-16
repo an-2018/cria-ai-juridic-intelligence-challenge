@@ -1,1 +1,0 @@
-# TODO: StorageRepository interface implementation

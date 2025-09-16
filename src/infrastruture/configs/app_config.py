@@ -7,8 +7,9 @@ class Settings(BaseSettings):
     APP_VERSION: str = "1.0.0"
     GEMINI_API_KEY: str = ""
     GEMINI_MODEL_NAME: str = "gemini-2.0-flash"
-    DYNAMODB_TABLE_NAME: str = ""
-    
+    MONGODB_URI: str = "mongodb://localhost:27017/"
+    MONGODB_DB_NAME: str = "process_data_db"
+
     model_config = SettingsConfigDict(env_file=".env", env_file_encoding="utf-8")
 
 settings = Settings()
