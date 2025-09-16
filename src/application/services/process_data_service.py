@@ -40,7 +40,7 @@ class ProcessDataService:
         except Exception as e:
             self.logger.error(f"Failed to download or validate PDF from URL: {e}", exc_info=True)
             raise Exception(f"Failed to process PDF from URL: {e}") from e
-    
+
     def extract_information_from_pdf(self, pdf_binary: bytes) -> dict:
         """
         Extracts structured data from a PDF file binary using the GeminiClient.
@@ -50,7 +50,6 @@ class ProcessDataService:
 
         Returns:
             a dictionary with the information extracted from the pdf document ('resume', 'timeline', 'evidence').
-        """
         """
         try:
             self.logger.info("Extracting information from PDF using GeminiClient")
@@ -68,8 +67,10 @@ class ProcessDataService:
         except Exception as e:
             self.logger.error(f"Failed to extract information from PDF: {e}", exc_info=True)
             raise Exception(f"Failed to extract information from PDF: {e}") from e
-        """
+
         # Mocked response for demonstration purposes
+        """
+
         return {
             "resume": "This is a legal case involving José Ribamar Alves Filho, who is suing Fundo de Investimento em Direitos Creditorios Nao Padronizados NPL II for alleged inexistência de débitos and damages.",
             "timeline": [
@@ -159,3 +160,4 @@ class ProcessDataService:
                 { "evidence_id": 17, "evidence_name": "Carta de Preposição", "evidence_flaw": "Sem inconsistências", "evidence_page_init": 134, "evidence_page_end": 134 }
             ]
         }
+        """
