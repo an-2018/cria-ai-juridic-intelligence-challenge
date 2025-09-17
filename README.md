@@ -205,11 +205,11 @@ Using MongoCompass for instance we can validate the persistence of the extracted
 
   Then we can call the service by running a curl command like this:
   ```bash
-curl -X POST \
-  'http://127.0.0.1:3000/extract' \
-  -H 'accept: application/json' \
-  -H 'Content-Type: application/json' \
-  -d '{"pdf_url":"https://process-file-challenge.s3.us-east-1.amazonaws.com/0809090-86.2024.8.12.0021.pdf","case_id":"0809090-86.2024.8.12.0021"}'
+  curl -X POST \
+    'http://127.0.0.1:3000/extract' \
+    -H 'accept: application/json' \
+    -H 'Content-Type: application/json' \
+    -d '{"pdf_url":"https://process-file-challenge.s3.us-east-1.amazonaws.com/0809090-86.2024.8.12.0021.pdf","case_id":"0809090-86.2024.8.12.0021"}'
   ```
 
   Following we have a local test of the api using `sam local start-api` command:
